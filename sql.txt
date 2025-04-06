@@ -1,0 +1,58 @@
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create the crime_reports table
+CREATE TABLE crime_reports (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    type VARCHAR(50) NOT NULL,
+    location VARCHAR(255) NOT NULL,
+    incident_date DATE NOT NULL,
+    incident_time TIME,
+    description TEXT NOT NULL,
+    witnesses TEXT,
+    evidence_description TEXT,
+    evidence_file_path VARCHAR(255),
+    status ENUM('pending', 'investigating', 'resolved', 'closed') NOT NULL DEFAULT 'pending',
+    officer_assigned INT,
+    officer_notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+-- Create an index for faster queries by user
+CREATE INDEX idx_crime_reports_user_id ON crime_reports(user_id);
+
+-- Create an index for faster status filtering
+CREATE INDEX idx_crime_reports_status ON crime_reports(status);
+
+-- Create an index for date-based queries
+CREATE INDEX idx_crime_reports_date ON crime_reports(incident_date);
+
+-- Optional: Create a table for evidence files (if you want to support multiple files per report)
+CREATE TABLE crime_evidence_files (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    report_id INT NOT NULL,
+    file_path VARCHAR(255) NOT NULL,
+    file_name VARCHAR(255) NOT NULL,
+    file_type VARCHAR(50) NOT NULL,
+    file_size INT NOT NULL,
+    uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (report_id) REFERENCES crime_reports(id) ON DELETE CASCADE
+);
+
+-- Sample insert statement for testing
+INSERT INTO crime_reports (
+    user_id, type, location, incident_date, incident_time, 
+    description, witnesses, evidence_description, status
+) VALUES (
+    1, 'Theft', '123 Main Street, Cityville', '2025-04-01', '14:30:00',
+    'My bicycle was stolen from outside the grocery store. It was a blue mountain bike with the brand name "SpeedCycle".',
+    'A store employee may have witnessed the incident. Their name was John according to their nametag.',
+    'There might be security camera footage from the grocery store.',
+    'pending'
+);
