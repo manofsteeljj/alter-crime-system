@@ -5,7 +5,7 @@ session_start();
 $host = 'localhost';
 $user = 'root';
 $pass = 'mary';
-$dbname = 'crime3'; // Changed to match the login page database
+$dbname = 'crime3';
 $conn = new mysqli($host, $user, $pass, $dbname);
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
@@ -24,7 +24,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (empty($name)) $errors[] = "Name is required.";
     if (empty($email)) $errors[] = "Email is required.";
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = "Invalid email format.";
-    if (empty($password)) $errors[] = "Password is required.";
+    if (empty($password)) {
+        $errors[] = "Password is required.";
+    } elseif (strlen($password) < 8) {
+        $errors[] = "Password must be at least 8 characters.";
+    }
     if ($password !== $confirm) $errors[] = "Passwords do not match.";
 
     // Check if email already exists
@@ -38,8 +42,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Register user if no errors
     if (empty($errors)) {
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-        $stmt = $conn->prepare("INSERT INTO users (username, password) VALUES (?, ?)");
-        $stmt->bind_param("ss", $email, $hashedPassword);
+        $stmt = $conn->prepare("INSERT INTO users (name, username, password) VALUES (?, ?, ?)");
+        $stmt->bind_param("sss", $name, $email, $hashedPassword);
         if ($stmt->execute()) {
             $_SESSION['success'] = "Registration successful. You can now log in.";
             header("Location: login.php");

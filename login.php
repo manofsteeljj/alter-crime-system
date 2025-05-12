@@ -23,7 +23,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Validation
     if (empty($email)) $emailErrors[] = "Email is required.";
-    if (empty($password)) $passwordErrors[] = "Password is required.";
+    if (empty($password)) {
+        $passwordErrors[] = "Password is required.";
+    } elseif (strlen($password) < 8) {
+        $passwordErrors[] = "Password must be at least 8 characters.";
+    }
 
     if (empty($emailErrors) && empty($passwordErrors)) {
         $stmt = $conn->prepare("SELECT id, password FROM users WHERE username = ?");

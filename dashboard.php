@@ -73,12 +73,31 @@ $conn->close();
     <title>Dashboard | Crime Report</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="dashboard.css">
+    <style>
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logo img {
+            height: 50px;
+            width: auto;
+        }
+        .site-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+        }
+    </style>
 </head>
 <body>
 
 <div class="header">
     <div class="header-content">
-        <div class="site-title">Crime Reporting System</div>
+        <div class="logo">
+            <img src="crime-report-logo.png" alt="Crime Report Logo">
+            <div class="site-title">Crime Reporting System</div>
+        </div>
         <div class="nav-links">
             <a href="dashboard.php">Dashboard</a>
             <a href="report-crime.php">Report Crime</a>
