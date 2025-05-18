@@ -123,13 +123,34 @@ $conn->close();
             background-color: #d4edda;
             color: #155724;
         }
+        /* Fade-in animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .profile-container, .profile-container h2, .errors, .success, form, .register-button {
+            animation: fadeInUp 0.8s cubic-bezier(.4,2,.6,1) both;
+        }
+        .profile-container h2 { animation-delay: 0.1s; }
+        .errors, .success { animation-delay: 0.2s; }
+        form { animation-delay: 0.3s; }
+        .register-button { animation-delay: 0.4s; }
     </style>
 </head>
 <body>
 
 <div class="header">
     <div class="header-content">
-        <div class="site-title">Crime Reporting System</div>
+        <div class="logo" style="display: flex; align-items: center; gap: 15px;">
+            <img src="crime-report-logo.png" alt="Crime Report Logo" style="height:40px; width:auto; max-width:150px;">
+            <span class="site-title">Crime Reporting System</span>
+        </div>
         <div class="nav-links">
             <a href="dashboard.php">Dashboard</a>
             <a href="report-crime.php">Report Crime</a>
@@ -171,6 +192,9 @@ $conn->close();
 
             <button type="submit" class="register-button">Update Profile</button>
         </form>
+        <div style="text-align:center; margin-top:20px;">
+            <a href="change-password.php" class="register-button" style="background:#cc66cc; width:auto; display:inline-block;">Change Password</a>
+        </div>
     </div>
 </div>
 

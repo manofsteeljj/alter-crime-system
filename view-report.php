@@ -32,9 +32,7 @@ if (isset($_POST['delete'])) {
     $stmt = $conn->prepare("DELETE FROM crime_reports WHERE id = ? AND user_id = ?");
     $stmt->bind_param("ii", $reportId, $userId);
     $stmt->execute();
-    
     if ($stmt->affected_rows > 0) {
-        // Report deleted successfully
         header("Location: my-reports.php?deleted=true");
         exit();
     }
@@ -44,11 +42,11 @@ if (isset($_POST['delete'])) {
 // Handle status update (for demonstration - normally might need admin rights)
 if (isset($_POST['update_status'])) {
     $newStatus = $_POST['status'];
-    if ($newStatus === 'pending' || $newStatus === 'resolved') {
+    $allowedStatuses = ['pending', 'investigating', 'resolved', 'closed'];
+    if (in_array($newStatus, $allowedStatuses)) {
         $stmt = $conn->prepare("UPDATE crime_reports SET status = ? WHERE id = ? AND user_id = ?");
         $stmt->bind_param("sii", $newStatus, $reportId, $userId);
         $stmt->execute();
-        
         if ($stmt->affected_rows > 0) {
             $statusUpdateSuccess = true;
         }
@@ -58,7 +56,7 @@ if (isset($_POST['update_status'])) {
 
 // Fetch the report details
 $report = null;
-$sql = "SELECT id, type, location, description, status, created_at, updated_at, evidence_file 
+$sql = "SELECT id, type, location, description, status, created_at, updated_at, evidence_file_path 
         FROM crime_reports WHERE id = ? AND user_id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("ii", $reportId, $userId);
@@ -68,29 +66,27 @@ $result = $stmt->get_result();
 if ($result->num_rows === 1) {
     $report = $result->fetch_object();
 } else {
-    // Report not found or doesn't belong to user
     header("Location: my-reports.php");
     exit();
 }
-
 $stmt->close();
 
 // Fetch comments/updates if you have a related table
 $comments = [];
-$sql = "SELECT id, comment, created_at, officer_id 
-        FROM report_comments WHERE report_id = ? ORDER BY created_at ASC";
-$stmt = $conn->prepare($sql);
-if ($stmt) {
-    $stmt->bind_param("i", $reportId);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    
-    while ($row = $result->fetch_object()) {
-        $comments[] = $row;
+if ($conn->query("SHOW TABLES LIKE 'report_comments'")->num_rows) {
+    $sql = "SELECT id, comment, created_at, officer_id 
+            FROM report_comments WHERE report_id = ? ORDER BY created_at ASC";
+    $stmt = $conn->prepare($sql);
+    if ($stmt) {
+        $stmt->bind_param("i", $reportId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        while ($row = $result->fetch_object()) {
+            $comments[] = $row;
+        }
+        $stmt->close();
     }
-    $stmt->close();
 }
-
 $conn->close();
 ?>
 
@@ -102,70 +98,102 @@ $conn->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="dashboard.css">
     <style>
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
         .report-details {
-            background-color: #f9f9f9;
-            border-radius: 6px;
-            padding: 20px;
-            margin-bottom: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            padding: 30px 30px 20px 30px;
+            margin-bottom: 30px;
         }
         .detail-row {
             display: flex;
             border-bottom: 1px solid #eee;
-            padding: 12px 0;
+            padding: 14px 0;
         }
         .detail-row:last-child {
             border-bottom: none;
         }
         .detail-label {
-            font-weight: bold;
+            font-weight: 600;
             width: 30%;
             min-width: 120px;
+            color: #23235b;
         }
         .detail-value {
             width: 70%;
-            line-height: 1.5;
+            line-height: 1.6;
+            color: #444;
         }
         .actions {
             display: flex;
-            gap: 10px;
-            margin: 20px 0;
+            gap: 12px;
+            margin: 25px 0 20px 0;
         }
-        .btn-danger {
-            background-color: #dc3545;
-            color: white;
+        .btn, .btn-primary, .btn-danger {
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: 600;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 1rem;
         }
-        .btn-primary {
-            background-color: #007bff;
-            color: white;
-        }
-        .comment-box {
-            background: #f0f0f0;
-            border-radius: 6px;
-            padding: 15px;
-            margin-bottom: 10px;
-        }
-        .comment-meta {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.9em;
-            color: #666;
-            margin-bottom: 5px;
-        }
+        .btn { background: #6666cc; color: #fff; }
+        .btn-primary { background: #007bff; color: #fff; }
+        .btn-danger { background: #dc3545; color: #fff; }
+        .btn:hover, .btn-primary:hover, .btn-danger:hover { opacity: 0.9; }
         .evidence-image {
             max-width: 100%;
             max-height: 300px;
             border-radius: 5px;
             margin-top: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
         .message {
-            padding: 10px;
-            margin-bottom: 15px;
+            padding: 12px;
+            margin-bottom: 18px;
             border-radius: 5px;
-        }
-        .success {
             background-color: #d4edda;
             color: #155724;
             border: 1px solid #c3e6cb;
+        }
+        .comments-section {
+            margin-top: 30px;
+        }
+        .comment-box {
+            background: #f8f8fa;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+        }
+        .comment-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.95em;
+            color: #666;
+            margin-bottom: 6px;
+        }
+        h2 {
+            color: #23235b;
+            margin-bottom: 18px;
+        }
+        h3 {
+            color: #23235b;
+            margin-top: 30px;
+        }
+        @media (max-width: 600px) {
+            .container { padding: 0 5px; }
+            .report-details { padding: 15px; }
+            .detail-label, .detail-value { width: 100%; display: block; }
+            .detail-row { flex-direction: column; }
+            .actions { flex-direction: column; gap: 8px; }
         }
     </style>
 </head>
@@ -173,7 +201,10 @@ $conn->close();
 
 <div class="header">
     <div class="header-content">
-        <div class="site-title">Crime Reporting System</div>
+        <div class="logo">
+            <img src="crime-report-logo.png" alt="Crime Report Logo" style="height:40px; width:auto; max-width:150px;">
+            <span class="site-title">Crime Reporting System</span>
+        </div>
         <div class="nav-links">
             <a href="dashboard.php">Dashboard</a>
             <a href="report-crime.php">Report Crime</a>
@@ -188,7 +219,7 @@ $conn->close();
     <h2>Report Details</h2>
     
     <?php if (isset($statusUpdateSuccess)): ?>
-        <div class="message success">Report status updated successfully.</div>
+        <div class="message">Report status updated successfully.</div>
     <?php endif; ?>
     
     <div class="actions">
@@ -202,55 +233,50 @@ $conn->close();
             <div class="detail-label">Report Type:</div>
             <div class="detail-value"><?php echo htmlspecialchars($report->type); ?></div>
         </div>
-        
         <div class="detail-row">
             <div class="detail-label">Location:</div>
             <div class="detail-value"><?php echo htmlspecialchars($report->location); ?></div>
         </div>
-        
         <div class="detail-row">
             <div class="detail-label">Status:</div>
             <div class="detail-value">
                 <form method="post" id="statusForm">
                     <select name="status" onchange="document.getElementById('statusForm').submit()">
                         <option value="pending" <?php echo $report->status === 'pending' ? 'selected' : ''; ?>>Pending</option>
+                        <option value="investigating" <?php echo $report->status === 'investigating' ? 'selected' : ''; ?>>Investigating</option>
                         <option value="resolved" <?php echo $report->status === 'resolved' ? 'selected' : ''; ?>>Resolved</option>
+                        <option value="closed" <?php echo $report->status === 'closed' ? 'selected' : ''; ?>>Closed</option>
                     </select>
                     <input type="hidden" name="update_status" value="1">
                 </form>
             </div>
         </div>
-        
         <div class="detail-row">
             <div class="detail-label">Date Reported:</div>
             <div class="detail-value"><?php echo date('F d, Y \a\t h:i A', strtotime($report->created_at)); ?></div>
         </div>
-        
         <?php if ($report->updated_at): ?>
         <div class="detail-row">
             <div class="detail-label">Last Updated:</div>
             <div class="detail-value"><?php echo date('F d, Y \a\t h:i A', strtotime($report->updated_at)); ?></div>
         </div>
         <?php endif; ?>
-        
         <div class="detail-row">
             <div class="detail-label">Description:</div>
             <div class="detail-value"><?php echo nl2br(htmlspecialchars($report->description)); ?></div>
         </div>
-        
-        <?php if ($report->evidence_file): ?>
+        <?php if ($report->evidence_file_path): ?>
         <div class="detail-row">
             <div class="detail-label">Evidence:</div>
             <div class="detail-value">
                 <?php
-                $fileExt = pathinfo($report->evidence_file, PATHINFO_EXTENSION);
+                $fileExt = pathinfo($report->evidence_file_path, PATHINFO_EXTENSION);
                 $imgExts = ['jpg', 'jpeg', 'png', 'gif'];
-                
                 if (in_array(strtolower($fileExt), $imgExts)):
                 ?>
-                    <img src="uploads/<?php echo $report->evidence_file; ?>" alt="Evidence" class="evidence-image">
+                    <img src="<?php echo htmlspecialchars($report->evidence_file_path); ?>" alt="Evidence" class="evidence-image">
                 <?php else: ?>
-                    <a href="uploads/<?php echo $report->evidence_file; ?>" target="_blank">View Attached File</a>
+                    <a href="<?php echo htmlspecialchars($report->evidence_file_path); ?>" target="_blank">View Attached File</a>
                 <?php endif; ?>
             </div>
         </div>

@@ -72,7 +72,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Handle file upload logic (optional)
         $fileUploaded = true;
         $fileName = uniqid() . '-' . basename($_FILES['evidence_file']['name']);
-        $filePath = 'uploads/' . $fileName;
+        $uploadDir = 'uploads/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0777, true);
+        }
+        $filePath = $uploadDir . $fileName;
         move_uploaded_file($_FILES['evidence_file']['tmp_name'], $filePath);
         $reportData['evidence'] = $filePath; // Save the file path
     } else {
@@ -131,7 +135,10 @@ $conn->close();
 
 <div class="header">
     <div class="header-content">
-        <div class="site-title">Crime Reporting System</div>
+        <div class="logo" style="display: flex; align-items: center; gap: 15px;">
+            <img src="crime-report-logo.png" alt="Crime Report Logo" style="height:40px; width:auto; max-width:150px;">
+            <span class="site-title">Crime Reporting System</span>
+        </div>
         <div class="nav-links">
             <a href="dashboard.php">Dashboard</a>
             <a href="report-crime.php">Report Crime</a>
@@ -229,6 +236,41 @@ $conn->close();
         </form>
     </div>
 </div>
+
+<style>
+/* Fade-in animation */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+.container,
+.page-title,
+.form-container {
+    animation: fadeInUp 0.8s cubic-bezier(.4,2,.6,1) both;
+}
+.page-title { animation-delay: 0.1s; }
+.form-container { animation-delay: 0.2s; }
+
+.btn, .btn-primary, .btn-secondary {
+    transition: transform 0.18s cubic-bezier(.4,2,.6,1), box-shadow 0.18s;
+}
+.btn:hover, .btn-primary:hover, .btn-secondary:hover {
+    transform: translateY(-3px) scale(1.04);
+    box-shadow: 0 4px 16px rgba(102,102,204,0.13);
+}
+
+.form-control:focus {
+    border-color: #6666cc;
+    box-shadow: 0 0 0 2px #e3e3ff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+</style>
 
 </body>
 </html>

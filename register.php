@@ -89,6 +89,22 @@ $conn->close();
             padding: 50px;
             overflow-y: auto;
         }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+        .logo img {
+            height: 48px;
+            width: auto;
+            max-width: 150px;
+        }
+        .site-title {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
         .tagline {
             font-size: 48px;
             font-weight: 300;
@@ -148,6 +164,11 @@ $conn->close();
             font-size: 18px;
             cursor: pointer;
             margin: 20px 0;
+            transition: transform 0.18s cubic-bezier(.4,2,.6,1), box-shadow 0.18s;
+        }
+        .register-button:hover {
+            transform: translateY(-3px) scale(1.04);
+            box-shadow: 0 4px 16px rgba(102,102,204,0.13);
         }
         .login-link {
             text-align: center;
@@ -178,11 +199,41 @@ $conn->close();
                 height: 30vh;
             }
         }
+
+        /* Fade-in animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .left-panel,
+        .right-panel,
+        .welcome-back,
+        .login-instruction,
+        form,
+        .errors {
+            animation: fadeInUp 0.8s cubic-bezier(.4,2,.6,1) both;
+        }
+        .left-panel { animation-delay: 0.1s; }
+        .right-panel { animation-delay: 0.2s; }
+        .welcome-back { animation-delay: 0.3s; }
+        .login-instruction { animation-delay: 0.4s; }
+        form { animation-delay: 0.5s; }
+        .errors { animation-delay: 0.6s; }
     </style>
 </head>
 <body>
 
 <div class="left-panel">
+    <div class="logo" style="display: flex; align-items: center; gap: 15px; margin-bottom: 40px;">
+        <img src="crime-report-logo.png" alt="Crime Report Logo" style="height:48px; width:auto; max-width:150px;">
+        <span class="site-title" style="font-size:28px; font-weight:700; letter-spacing:1px;">Crime Reporting System</span>
+    </div>
     <div class="tagline">
         Report the Unseen,<br>
         Secure the <span class="emphasis">Future!</span>

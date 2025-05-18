@@ -71,6 +71,7 @@ $conn->close();
             padding: 0;
             display: flex;
             height: 100vh;
+            background: #f4f6fa;
         }
         .left-panel {
             width: 60%;
@@ -80,18 +81,29 @@ $conn->close();
             flex-direction: column;
             justify-content: space-between;
             padding: 50px;
+            position: relative;
         }
-        .right-panel {
-            width: 40%;
+        .logo {
             display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 50px;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+        .logo img {
+            height: 48px;
+            width: auto;
+            max-width: 150px;
+        }
+        .site-title {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 1px;
         }
         .tagline {
             font-size: 48px;
             font-weight: 300;
             line-height: 1.2;
+            margin-top: 40px;
         }
         .tagline .emphasis {
             font-weight: 700;
@@ -107,11 +119,33 @@ $conn->close();
             font-size: 24px;
             border-bottom: 1px solid white;
         }
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(80px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        .right-panel {
+            width: 40%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 50px;
+            background: #fff;
+            box-shadow: 0 0 24px rgba(102,102,204,0.06);
+            animation: slideInRight 0.8s cubic-bezier(.4,2,.6,1) both;
+        }
         .welcome-back {
             font-size: 32px;
             font-weight: 700;
             margin-bottom: 10px;
             text-align: center;
+            color: #23235b;
+            letter-spacing: 1px;
         }
         .login-instruction {
             font-size: 16px;
@@ -149,6 +183,12 @@ $conn->close();
             font-size: 18px;
             cursor: pointer;
             margin-bottom: 20px;
+            transition: background 0.2s, transform 0.18s cubic-bezier(.4,2,.6,1);
+        }
+        .login-button:hover {
+            background-color: #23235b;
+            transform: translateY(-3px) scale(1.04);
+            box-shadow: 0 4px 16px rgba(102,102,204,0.13);
         }
         .forgot-password {
             text-align: center;
@@ -170,16 +210,38 @@ $conn->close();
             font-size: 13px;
             margin-top: 5px;
         }
-        
-        @media (max-width: 768px) {
+        .status {
+            color: #155724;
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        @media (max-width: 900px) {
             body {
                 flex-direction: column;
             }
             .left-panel, .right-panel {
                 width: 100%;
+                min-width: 0;
             }
             .left-panel {
                 height: 30vh;
+                padding: 30px 20px;
+            }
+            .right-panel {
+                padding: 30px 20px;
+            }
+            .tagline {
+                font-size: 32px;
+            }
+            .logo img {
+                height: 36px;
+            }
+            .site-title {
+                font-size: 20px;
             }
         }
     </style>
@@ -187,9 +249,15 @@ $conn->close();
 <body>
 
 <div class="left-panel">
-    <div class="tagline">
-        Report the Unseen,<br>
-        Secure the <span class="emphasis">Future!</span>
+    <div>
+        <div class="logo">
+            <img src="crime-report-logo.png" alt="Crime Report Logo">
+            <span class="site-title">Crime Reporting System</span>
+        </div>
+        <div class="tagline">
+            Report the Unseen,<br>
+            Secure the <span class="emphasis">Future!</span>
+        </div>
     </div>
     <div class="start-here">
         <a href="register.php">Your Crime Reporting Starts here!</a>
@@ -198,7 +266,7 @@ $conn->close();
 
 <div class="right-panel">
     <div class="welcome-back">Welcome Back</div>
-    <div class="login-instruction">Login to your account to continue</div>
+    <div class="login-instruction">Sign in to your account to continue</div>
 
     <?php if (!empty($_SESSION['success'])): ?>
         <div class="status"><?php echo htmlspecialchars($_SESSION['success']); unset($_SESSION['success']); ?></div>

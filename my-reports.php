@@ -99,13 +99,48 @@ $conn->close();
             color: #007bff;
             text-decoration: none;
         }
+        /* Fade-in animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .container,
+        h2,
+        .table-container,
+        .search-filter,
+        .no-reports,
+        .message {
+            animation: fadeInUp 0.8s cubic-bezier(.4,2,.6,1) both;
+        }
+        h2 { animation-delay: 0.1s; }
+        .search-filter { animation-delay: 0.2s; }
+        .table-container, .no-reports { animation-delay: 0.3s; }
+        .message { animation-delay: 0.4s; }
+
+        /* Button and link hover animation */
+        .edit-btn, .delete-btn, .view-link {
+            transition: transform 0.18s cubic-bezier(.4,2,.6,1), box-shadow 0.18s;
+        }
+        .edit-btn:hover, .delete-btn:hover, .view-link:hover {
+            transform: translateY(-3px) scale(1.04);
+            box-shadow: 0 4px 16px rgba(102,102,204,0.13);
+        }
     </style>
 </head>
 <body>
 
 <div class="header">
     <div class="header-content">
-        <div class="site-title">Crime Reporting System</div>
+        <div class="logo" style="display: flex; align-items: center; gap: 15px;">
+            <img src="crime-report-logo.png" alt="Crime Report Logo" style="height:40px; width:auto; max-width:150px;">
+            <span class="site-title">Crime Reporting System</span>
+        </div>
         <div class="nav-links">
             <a href="dashboard.php">Dashboard</a>
             <a href="report-crime.php">Report Crime</a>

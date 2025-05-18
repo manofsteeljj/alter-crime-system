@@ -76,10 +76,11 @@ h2 {
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     text-align: center;
-    transition: transform 0.3s;
+    transition: transform 0.18s cubic-bezier(.4,2,.6,1), box-shadow 0.18s;
 }
 .card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-5px) scale(1.03);
+    box-shadow: 0 8px 24px rgba(102,102,204,0.13);
 }
 .card span.count {
     font-size: 36px;
@@ -193,6 +194,15 @@ tr:hover {
     text-align: center;
     padding: 30px;
     color: #666;
+}
+
+/* Quick Link Buttons */
+.quick-link-btn, .btn, .btn-primary, .btn-secondary {
+    transition: transform 0.18s cubic-bezier(.4,2,.6,1), box-shadow 0.18s;
+}
+.quick-link-btn:hover, .btn:hover, .btn-primary:hover, .btn-secondary:hover {
+    transform: translateY(-3px) scale(1.04);
+    box-shadow: 0 4px 16px rgba(102,102,204,0.13);
 }
 
 /* Responsive */
