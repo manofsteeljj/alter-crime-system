@@ -142,6 +142,39 @@ $conn->close();
             background-color: #d4edda;
             color: #155724;
         }
+
+        /* Fade-in animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .edit-report-container,
+        .edit-report-container h2,
+        .errors,
+        .success,
+        form,
+        .back-link {
+            animation: fadeInUp 0.8s cubic-bezier(.4,2,.6,1) both;
+        }
+        .edit-report-container h2 { animation-delay: 0.1s; }
+        .errors, .success { animation-delay: 0.2s; }
+        form { animation-delay: 0.3s; }
+        .back-link { animation-delay: 0.4s; }
+
+        /* Button hover animation */
+        .btn {
+            transition: transform 0.18s cubic-bezier(.4,2,.6,1), box-shadow 0.18s;
+        }
+        .btn:hover {
+            transform: translateY(-3px) scale(1.04);
+            box-shadow: 0 4px 16px rgba(102,102,204,0.13);
+        }
     </style>
 </head>
 <body>

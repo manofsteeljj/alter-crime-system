@@ -188,6 +188,46 @@ $conn->close();
             color: #23235b;
             margin-top: 30px;
         }
+        /* Fade-in animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .container,
+        h2,
+        .actions,
+        .report-details,
+        .comments-section,
+        .message,
+        h3 {
+            animation: fadeInUp 0.8s cubic-bezier(.4,2,.6,1) both;
+        }
+        h2 { animation-delay: 0.1s; }
+        .actions { animation-delay: 0.2s; }
+        .report-details { animation-delay: 0.3s; }
+        .message { animation-delay: 0.4s; }
+        .comments-section, h3 { animation-delay: 0.5s; }
+
+        /* Button hover animation */
+        .btn, .btn-primary, .btn-danger {
+            transition: transform 0.18s cubic-bezier(.4,2,.6,1), box-shadow 0.18s;
+        }
+        .btn:hover, .btn-primary:hover, .btn-danger:hover {
+            transform: translateY(-3px) scale(1.04);
+            box-shadow: 0 4px 16px rgba(102,102,204,0.13);
+        }
+
+        /* Comment box animation */
+        .comment-box {
+            animation: fadeInUp 0.8s cubic-bezier(.4,2,.6,1) both;
+            animation-delay: 0.6s;
+        }
         @media (max-width: 600px) {
             .container { padding: 0 5px; }
             .report-details { padding: 15px; }
